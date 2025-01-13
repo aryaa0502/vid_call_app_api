@@ -14,6 +14,7 @@ const MeetingPayloadEnum = {
     ICECANDIDATE: 'icecandidate',
     VIDEO_TOGGLE: 'video-toggle',
     AUDIO_TOGGLE: 'audio-toggle',
+    STREAM_CHANGED: "stream-changed",
     NOT_FOUND: 'not-found',
     UNKNOWN: 'unknown'
 }

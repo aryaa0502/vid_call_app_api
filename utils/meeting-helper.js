@@ -37,6 +37,29 @@ async function joinMeeting(meetingId, socket, meetingServer, payload) {
     });
 }
 
+function forwardStreamChanged(meetingId, socket, meetingServer, payload) {
+    const { userId, stream } = payload.data;
+ 
+    // Find all users in the meeting
+    meetingServices.getAllMeetingUsers(meetingId, (error, results) => {
+        if(results) {
+            for (let i = 0; i < results.length; i++) {
+                const meetingUser = results[i];
+                if (meetingUser.userId !== userId) { // Don't broadcast to the user who made the change
+                    var sendPayload = JSON.stringify({
+                        type: MeetingPayloadEnum.STREAM_CHANGED, // assuming you define STREAM_CHANGED in the enum
+                        data: {
+                            userId,
+                            stream // Pass the stream data or stream metadata (e.g., video/audio toggle state)
+                        }
+                    });
+                    meetingServer.to(meetingUser.socketId).emit('message', sendPayload);
+                }
+            }
+        }
+    });
+}
+
 function forwardConnectionRequest(meetingId, socket, meetingServer, payload) {
     const { userId, otherUserId, name } = payload.data;
 
@@ -218,5 +241,6 @@ module.exports = {
     forwardAnswerSDP,
     userLeft,
     endMeeting,
-    forwardEvent
+    forwardEvent,
+    forwardStreamChanged
 }
